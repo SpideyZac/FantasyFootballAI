@@ -1,13 +1,30 @@
 import Node from "./tree";
 import State from "./state";
 
+/**
+    * The Monte Carlo Tree Search algorithm.
+    * @class MCTS
+    * @public
+*/
 export default class MCTS {
     root: Node;
 
+    /**
+        * Creates an instance of MCTS.
+        * @param rootState The root state of the game.
+        * @memberof MCTS
+        * @public
+    */
     constructor(rootState: State) {
         this.root = new Node(rootState, null, null);
     }
 
+    /**
+        * Selects a node to expand from.
+        * @returns The node to expand from.
+        * @memberof MCTS
+        * @public
+    */
     public select(): Node {
         let node = this.root;
 
@@ -18,6 +35,12 @@ export default class MCTS {
         return node;
     }
 
+    /**
+        * Expands a given node.
+        * @param node The node to expand.
+        * @memberof MCTS
+        * @public
+    */
     public expand(node: Node): void {
         const possibleMoves = node.state.getPossibleMoves();
 
@@ -31,6 +54,13 @@ export default class MCTS {
         node.expanded = true;
     }
 
+    /**
+        * Simulates a game from a given node.
+        * @param node The node to simulate from.
+        * @returns The reward of the simulation.
+        * @memberof MCTS
+        * @public
+    */
     public simulate(node: Node): number {
         const state = node.state.clone();
 
@@ -44,6 +74,13 @@ export default class MCTS {
         return state.getReward();
     }
 
+    /**
+        * Backpropagates the reward from a given node to the root node.
+        * @param node The node to backpropagate from.
+        * @param reward The reward to backpropagate.
+        * @memberof MCTS
+        * @public
+    */
     public backpropagate(node: Node, reward: number): void {
         while (node !== null) {
             node.visits++;
@@ -53,6 +90,13 @@ export default class MCTS {
         }
     }
 
+    /**
+        * Runs the MCTS algorithm for a given number of iterations.
+        * @param iterations The number of iterations to run the algorithm for.
+        * @returns The best move to make.
+        * @memberof MCTS
+        * @public
+    */
     public run(iterations: number): number {
         for (let i = 0; i < iterations; i++) {
             const node = this.select();
