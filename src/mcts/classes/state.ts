@@ -1,40 +1,24 @@
 export default class State {
-    constructor(
-        public board: number[] = [0, 0, 0, 0, 0, 0, 0, 0],
-        public player: number = 1,
-    ) {}
+    constructor() {}
 
     public clone(): State {
-        return new State(this.board.slice(), this.player);
+        return new State();
     }
 
-    public getWinner(): number {
-        for (let i = 0; i < 6; i++) {
-            if (this.board[i] === this.board[i + 1] && this.board[i] === this.board[i + 1] && this.board[i] !== 0) {
-                return this.board[i];
-            }
-        }
+    public isDone(): boolean {
+        return true;
+    }
 
+    public getReward(): number {
         return 0;
     }
 
-    public tie(): boolean {
-        return this.board.every((value) => value !== 0);
+    public makeMove(move: any): void {
+        
     }
 
-    public makeMove(move: number): void {
-        this.board[move] = this.player;
-        this.player = -this.player;
-    }
-
-    public getPossibleMoves(): number[] {
+    public getPossibleMoves(): any[] {
         const moves: number[] = [];
-
-        for (let i = 0; i < 8; i++) {
-            if (this.board[i] === 0) {
-                moves.push(i);
-            }
-        }
 
         return moves;
     }

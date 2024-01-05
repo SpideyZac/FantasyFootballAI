@@ -11,7 +11,7 @@ export default class MCTS {
     public select(): Node {
         let node = this.root;
 
-        while (node.children.length > 0 && node.state.getWinner() === 0 && node.state.getPossibleMoves().length !== node.children.length) {
+        while (node.children.length > 0 && !node.state.isDone() && node.expanded) {
             node = node.children.reduce((a, b) => a.getUCB() > b.getUCB() ? a : b);
         }
 
@@ -27,25 +27,27 @@ export default class MCTS {
 
             node.children.push(new Node(state, move, node));
         }
+
+        node.expanded = true;
     }
 
     public simulate(node: Node): number {
         const state = node.state.clone();
 
-        while (state.getWinner() === 0 && !state.tie()) {
+        while (!state.isDone()) {
             const possibleMoves = state.getPossibleMoves();
             const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
 
             state.makeMove(move);
         }
 
-        return state.getWinner();
+        return state.getReward();
     }
 
-    public backpropagate(node: Node, winner: number): void {
+    public backpropagate(node: Node, reward: number): void {
         while (node !== null) {
             node.visits++;
-            node.score += winner * node.state.player === 1 ? 1 : -1;
+            node.score += reward;
 
             node = node.parent!;
         }
@@ -55,14 +57,14 @@ export default class MCTS {
         for (let i = 0; i < iterations; i++) {
             const node = this.select();
 
-            if (node.state.getWinner() !== 0 || node.state.tie()) {
-                this.backpropagate(node, node.state.getWinner());
+            if (node.state.isDone()) {
+                this.backpropagate(node, node.state.getReward());
             } else {
                 this.expand(node);
 
-                const winner = this.simulate(node.children[Math.floor(Math.random() * node.children.length)]);
+                const reward = this.simulate(node.children[Math.floor(Math.random() * node.children.length)]);
 
-                this.backpropagate(node, winner);
+                this.backpropagate(node, reward);
             }
         }
 
