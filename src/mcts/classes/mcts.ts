@@ -97,7 +97,7 @@ export default class MCTS {
         * @memberof MCTS
         * @public
     */
-    public run(iterations: number): number {
+    public run(iterations: number): any {
         for (let i = 0; i < iterations; i++) {
             const node = this.select();
 
